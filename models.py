@@ -61,6 +61,33 @@ class Product(db.Entity):
     section = Required(Section)
 
 
+class UserState(db.Entity):
+    user_id = Required(int)
+    current_section = Required(str)
+
+    @staticmethod
+    def set_current_section(user_id: int, section: str):
+        """
+        Обновляет раздел, в котором находится пользователь
+        :param section: название раздела
+        :param user_id: id пользователя
+        """
+        user_state = UserState.get(user_id=user_id)
+        user_state.current_section = section
+
+    @staticmethod
+    def get_current_section(user_id: int) -> str:
+        """
+        Возвращает раздел, в котором на данный момент находится пользователь
+        :param user_id: id пользователя
+        :return: название раздела
+        """
+        user_state = UserState.get(user_id=user_id)
+        if not user_state:
+            user_state = UserState(user_id=user_id, current_section='root')
+        return user_state.current_section
+
+
 db.generate_mapping(create_tables=True)
 
 if __name__ == '__main__':
