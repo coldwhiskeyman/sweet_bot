@@ -77,14 +77,19 @@ class Bot:
             log.debug(event.type)
             return
 
-    def get_current_section(self, user_id):
+    def get_current_section(self, user_id: int) -> str:
+        """
+        Возвращает раздел, в котором на данный момент находится пользователь
+        :param user_id: id пользователя
+        :return: название раздела
+        """
         if user_id not in self.user_states:
             self.user_states[user_id] = 'root'
         return self.user_states[user_id]
 
     def get_keyboard(self, section: str = 'root') -> dict:
         """
-        Возвращает клавиатуру к переданному разделу
+        Возвращает клавиатуру соответственно текущему разделу
         :param section: название раздела
         :return: словарь, представляющий клавиатуру
         """
@@ -126,12 +131,23 @@ class Bot:
 
     @staticmethod
     def get_buttons_for_section(section: str) -> List[str]:
+        """
+        Возвращает кнопки клавиатуры соответственно текущему разделу
+        :param section: название раздела
+        :return: список названий кнопок
+        """
         if section == 'root':
             return select(s.name for s in Section)[:]
         else:
             return select(p.name for p in Product if p.section.name == section)
 
-    def check_choice(self, user_id, current_section, text):
+    def check_choice(self, user_id: int, current_section: str, text: str):
+        """
+        Проверка выбора из вариантов кнопок клавиатуры
+        :param user_id: id пользователя
+        :param current_section: название текущего раздела
+        :param text: текст сообщения
+        """
         if current_section == 'root':
             sections = select(s.name for s in Section)[:]
             for section in sections:
@@ -152,8 +168,12 @@ class Bot:
                     return
         self.check_intents(user_id, text)
 
-    def check_intents(self, user_id, text):
-        """Проверка возможных запросов"""
+    def check_intents(self, user_id: int, text: str):
+        """
+        Проверка возможных запросов
+        :param user_id: id пользователя
+        :param text: текст сообщения
+        """
         for intent in settings.INTENTS:
             if any(token in text.lower() for token in intent['tokens']):
                 keyboard = json.dumps(self.get_keyboard(intent['section']))
@@ -165,8 +185,13 @@ class Bot:
             self.user_states[user_id] = 'root'
             self.send_text(settings.DEFAULT_ANSWER, user_id, keyboard)
 
-    def send_text(self, text_to_send, user_id, keyboard=None):
-        """Отправка сообщения в VK"""
+    def send_text(self, text_to_send: str, user_id: int, keyboard: str = None):
+        """
+        Отправка сообщения в VK
+        :param text_to_send: текст отправляемого сообщения
+        :param user_id: id пользователя
+        :param keyboard: JSON-строка, представляющая клавиатуру
+        """
         self.api.messages.send(
             keyboard=keyboard,
             message=text_to_send,
@@ -175,16 +200,24 @@ class Bot:
         )
 
     @staticmethod
-    def open_image(image_path):
-        """Подготовка картинки к использованию"""
+    def open_image(image_path: str) -> BytesIO:
+        """
+        Подготовка картинки к использованию
+        :param image_path: относительный путь к картинке
+        :return: файловый объект
+        """
         base = Image.open(image_path)
         temp_file = BytesIO()
         base.save(temp_file, 'png')
         temp_file.seek(0)
         return temp_file
 
-    def send_image(self, image, user_id):
-        """Отправка изображения в VK"""
+    def send_image(self, image: BytesIO, user_id: int):
+        """
+        Отправка изображения в VK
+        :param image: файловый объект картинки
+        :param user_id: id пользователя
+        """
         upload_url = self.api.photos.getMessagesUploadServer()['upload_url']
         upload_data = requests.post(url=upload_url, files={'photo': ('image.png', image, 'image/png')}).json()
         image_data = self.api.photos.saveMessagesPhoto(**upload_data)
