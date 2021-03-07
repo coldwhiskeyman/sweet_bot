@@ -1,8 +1,11 @@
 import json
 import logging
+from io import BytesIO
 from random import randint
 from typing import List
 
+import requests
+from PIL import Image
 from pony.orm import select, db_session
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
@@ -143,7 +146,8 @@ class Bot:
             for product in products:
                 if product.lower() in text.lower():
                     product_obj = Product.get(name=product)
-                    self.send_text(product_obj.image, user_id)
+                    image = self.open_image(product_obj.image)
+                    self.send_image(image, user_id)
                     self.send_text(product_obj.description, user_id)
                     return
         self.check_intents(user_id, text)
@@ -166,6 +170,30 @@ class Bot:
         self.api.messages.send(
             keyboard=keyboard,
             message=text_to_send,
+            random_id=randint(0, 2 ** 20),
+            peer_id=user_id
+        )
+
+    @staticmethod
+    def open_image(image_path):
+        """Подготовка картинки к использованию"""
+        base = Image.open(image_path)
+        temp_file = BytesIO()
+        base.save(temp_file, 'png')
+        temp_file.seek(0)
+        return temp_file
+
+    def send_image(self, image, user_id):
+        """Отправка изображения в VK"""
+        upload_url = self.api.photos.getMessagesUploadServer()['upload_url']
+        upload_data = requests.post(url=upload_url, files={'photo': ('image.png', image, 'image/png')}).json()
+        image_data = self.api.photos.saveMessagesPhoto(**upload_data)
+        owner_id = image_data[0]['owner_id']
+        media_id = image_data[0]['id']
+        attachment = f'photo{owner_id}_{media_id}'
+
+        self.api.messages.send(
+            attachment=attachment,
             random_id=randint(0, 2 ** 20),
             peer_id=user_id
         )
