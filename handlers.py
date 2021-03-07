@@ -1,4 +1,5 @@
 import json
+import logging
 from io import BytesIO
 from typing import List, Tuple
 
@@ -7,6 +8,8 @@ from pony.orm import select
 
 import settings
 from models import Product, Section, UserState
+
+log = logging.getLogger('bot')
 
 
 def root_choice_handler(text: str, user_id: int) -> Tuple[str, str] or bool:
@@ -23,6 +26,7 @@ def root_choice_handler(text: str, user_id: int) -> Tuple[str, str] or bool:
             keyboard = json.dumps(get_keyboard(section))
             text_to_send = f'Вы перешли в раздел "{section}". Выберите интересующий вас товар.'
             UserState.set_current_section(user_id, section)
+            log.debug(f'Ответ: {text_to_send}; user_id: {user_id}')
             return text_to_send, keyboard
     else:
         return False
@@ -41,6 +45,7 @@ def section_choice_handler(text: str, current_section: str) -> Tuple[str, BytesI
         if product.lower() in text.lower():
             product_obj = Product.get(name=product)
             image = open_image(product_obj.image)
+            log.debug(f'Ответ: {product_obj.description}')
             return product_obj.description, image
     else:
         return False
@@ -59,6 +64,7 @@ def intents_handler(text: str, user_id: int) -> Tuple[str, str] or bool:
             keyboard = json.dumps(get_keyboard(intent['section']))
             text_to_send = intent['answer']
             UserState.set_current_section(user_id, intent['section'])
+            log.debug(f'Ответ: {text_to_send}; user_id: {user_id}')
             return text_to_send, keyboard
     else:
         return False

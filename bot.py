@@ -18,13 +18,13 @@ log = logging.getLogger('bot')
 def configure_logging():
     """Настройка логгирования"""
     stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(logging.Formatter('%(levelname)s %(message)s'))
+    stream_handler.setFormatter(logging.Formatter('%(levelname)s %(funcName)s %(message)s'))
     stream_handler.setLevel(logging.INFO)
     log.addHandler(stream_handler)
 
     file_handler = logging.FileHandler('bot.log')
     file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s %(message)s', '%Y-%m-%d %H:%M'))
+        '%(asctime)s | %(levelname)s | %(funcName)s | %(message)s', '%d-%m-%Y %H:%M'))
     file_handler.setLevel(logging.DEBUG)
     log.addHandler(file_handler)
 
@@ -65,6 +65,7 @@ class Bot:
             user_id = event.object.message['peer_id']
             current_section = UserState.get_current_section(user_id)
             text = event.object.message['text']
+            log.debug(f'Новое сообщение: {text}; user_id: {user_id}')
             self.check_choice(user_id, current_section, text)
         else:
             log.debug(event.type)
