@@ -7,39 +7,39 @@ DATABASE_DICT = {
             'description': 'Свежайшие пончики с пылу с жару, посыпанные сахарной пудрой',
         },
         'Шоколадные пончики': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/chocolate_donut.jpg',
             'description': 'Ароматные пончики в шоколадной глазури',
         },
         'Клубничные пончики': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/strawberry_donut.jpg',
             'description': 'Летняя сладость с пончиками в клубничной глазури',
         },
     },
     'Кексы': {
         'Кексы с изюмом': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/raisin_muffin.jpg',
             'description': 'Кексы с изюмом, прямо как делала ваша бабушка',
         },
         'Шоколадные кексы': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/chocolate_muffin.jpg',
             'description': 'Шоколадные кексы и кофе - бессмертная классика',
         },
         'Кексы с черникой': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/blueberry_muffin.jpg',
             'description': 'Съешь быстрее, чтобы добраться до сочной черники!',
         },
     },
     'Штрудели': {
         'Яблочный штрудель': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/apple_strudel.jpg',
             'description': 'Классический немецкий рецепт яблочного штруделя, проверенный веками',
         },
         'Грушевый штрудель': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/pear_strudel.jpg',
             'description': 'Нежная фруктовая радость и сладость',
         },
         'Вишневый штрудель': {
-            'image': 'img/sugar_donut.jpg',
+            'image': 'img/cherry_strudel.jpg',
             'description': 'Ягодный взрыв в нежнейшем слоеном тесте',
         },
     },
