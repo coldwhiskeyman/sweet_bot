@@ -107,7 +107,7 @@ class Bot:
             keyboard = msg_data[1]
             self.send_text(text_to_send, user_id, keyboard)
         else:
-            keyboard = json.dumps(self.get_keyboard('root'))
+            keyboard = json.dumps(handlers.get_keyboard('root'))
             UserState.set_current_section(user_id, 'root')
             self.send_text(settings.DEFAULT_ANSWER, user_id, keyboard)
 
